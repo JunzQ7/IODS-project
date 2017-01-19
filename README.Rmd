@@ -1,0 +1,12 @@
+#IODS-readme
+
+"*It is nice to get known with R and GitHub!*"
+
+Can you really also write LaTeX here?? Let's see!
+
+ $A = \pi*r^{2}$
+
+ 
+Here's a link to my diary:
+ 
+https://junzq7.github.io/IODS-project/
