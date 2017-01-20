@@ -2,8 +2,16 @@
 output: html_document
 ---
 
-# My thougths about IODS: **May it turn good**
+##Chapter 1
 
-Here is link to my github repository:
-https://github.com/JunzQ7/IODS-project
+>*"I've been waiting for IODS for ages!!"*
+
+[**THIS IS A LINK TO MY GITHUB REPOSITORY**](https://github.com/JunzQ7/IODS-project)
+
+ Languages |  Programs
+-----------|----------
+R         |RStudio
+Rmarkdown |GitHub
+
+$f_{\textbf{Y}}(\textbf{y};\theta) = \theta^k(1-\theta)^{n-k}$  
 
