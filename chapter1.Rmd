@@ -12,6 +12,3 @@ output: html_document
 -----------|----------
 R         |RStudio
 Rmarkdown |GitHub
-
-$f_{\textbf{Y}}(\textbf{y};\theta) = \theta^k(1-\theta)^{n-k}$  
-
