@@ -23,7 +23,7 @@ summary(l2014)
 ```
 Here we have the summaries of the variables in this data. It is clear that the female gender is represented quite much better than the male gender (F/M = 110/56). The ages are distributed with a median of 22. Since the oldest answerer seems to be 55 years old, it is good to focus on median instead of mean.
 
-```{r}
+```{r warning=FALSE}
 library(ggplot2)
 library(GGally)
 ```
