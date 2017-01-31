@@ -1,7 +1,85 @@
-# Insert chapter 2 title here
+# Chapter 2 - Linear Regression
 
 *Describe the work you have done this week and summarize your learning.*
 
 - Describe your work and results clearly. 
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
+
+1. Phase 1
+
+```{r}
+l2014 <- read.table("/home/juhana/Desktop/IODS-project/learning2014.txt", sep = ",", header = T)
+str(l2014)
+head(l2014)
+```
+
+This dataset is a modified dataset from its original data (http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt). The dataset that I'm working with consists of 7 variables, which explain the answerers' gender, age, attitude towards statistics, points of their exam (Course: Johdatus yhteiskuntatilastotieteeseen, syksy 2014) and their learning style.   
+
+2. Phase 2 
+
+```{r}
+summary(l2014)
+```
+Here we have the summaries of the variables in this data. It is clear that the female gender is represented quite much better than the male gender (F/M = 110/56). The ages are distributed with a median of 22. Since the oldest answerer seems to be 55 years old, it is good to focus on median instead of mean.
+
+```{r}
+library(ggplot2)
+library(GGally)
+```
+
+```{r}
+ggpairs(l2014, mapping = aes(col = gender, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+```
+
+From this plotmatrix we can see the distributions and the correlation between the variables more cleary.     
+    
+Let us first focus on the correlation between the exam points with other variables. The biggest correlation seems to be with the attitude towards statistics, which is not very surprising. There is also a considerable negative correlation between the age of male students and their points, whereas the age of female students have a tiny positive correlation with their points. From the two learning methods, deep learning has almost none correlation with the points and the strategic learning has got a noticeable correlation of 0.15.  
+  
+The biggest difference between the two genders is found from the attitude towards statistics, where men tend to score better. Another considerable difference can be found from the surface questions.  
+  
+  
+3. Phase 3
+
+```{r}
+summary(lm(points~age+attitude+stra, data=l2014))
+```
+
+Here we see a summary of a fitted regression model with three explanatory variables (age$=x_1$, attitud$=x_2$e and strategic learning $=x_3$) and the target value (points$=y$). This statistical test is testing how well the target value ($y$) corresponds to the explanatory variables ($x_1, x_2, x_3$), if we assume that there is a linear regression between the variables, so that $y = \alpha + \beta_1x_1 + \beta_2x_2 + \beta_3x_3 + \epsilon$, where $\epsilon$ is assumed to be a normally distributed error variable with a mean of 0.  
+  
+In this particular model we see that $\alpha = 10.90, \beta_1 = -0.090, \beta_2=3.50, \beta_3 = 1.00$. Since $\beta_2=3.50$ is statistically the only significant result, we might remove the variables $x_1$ and $x_3$, and fit the model again with only one explanatory variable. So we get:
+  
+```{r}
+summary(lm(points~attitude,data=l2014))
+```
+
+4. Phase 4
+
+Let me explain the results of our new linear model with only ont explanatory variable. The intercept value of 11.6372 means that based on this model, if a person has got an attitude of zero, he or she would score 11.6 points from the exam. The slope value 3.5255 means that if a person's attitude raises by one, his or her points would increase by 11.6.  
+  
+Another important value in this summary is 4.12e-09. It means that if we have set a null hyphotesis $H_0:\beta=0$, meaning that there is no correlation between points an attitude, the probability to get results like this. When we get a value of this size, it gives as a reason to reject the null hyphotesis and claim that there is a statistically significant correlation between attitude and points.  
+  
+A value called multiple R-squared can also be found from the summary. This value basicly tells how well the model fits with our data and it is always a value between 0 and 1. The closer the value is to 1, the better our model fits the data. In this case the value is 0.1906, which indicates that our model does not fit the data very well.  
+  
+As we can see from the following plot, occasionally the observation are quite far away from our regression model.
+
+```{r}
+qplot(attitude, points, data = l2014) + geom_smooth(method = "lm")
+```
+
+
+
+5. Phase 5
+
+In the following series of plots we can see some analysis of the residuals. The first picture shows the residuals against our fitted model. It seems that our residuals are spread out in quite an even way.
+  
+Let us remember the error variable $\epsilon$ in our model. The assumption was that it is normally distributed: $\epsilon\sim N(0,\sigma²)$). In the second picture ("QQ-plot") we see that if we standardize the errors, it fits our model very beautifully! This indicates that the residuals really are normally distributed. The last plot shows the leverage in our data, which means that how much impact single obsertavions have on the model. In this scenario, no point has higher leverage value than 0.05, which is very little. 
+
+```{r}
+plot(lm(points~attitude, data=l2014), which = c(1,2,5), par(mfrow=c(2,2)) )
+```
+
+
+
+
+
