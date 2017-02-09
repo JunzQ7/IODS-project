@@ -1,0 +1,84 @@
+# Chapter 3 - Logistic Regression
+
+```{r warning=FALSE}
+alc <- read.table("/home/juhana/Desktop/IODS-project/data/alc.csv", sep = ",", header = T)
+library(ggplot2)
+library(dplyr)
+```
+
+In this data we are interested in the relationships between high/low alcohol consumption and other variables. Let us choose choose the variables to study on to be these ones: "famrel" (quality of family relationships), "famsup" (family educational support), "goout" (going out with friends) and "Pstatus" (parents' cohabitation status).  
+  
+My hyphotesis is that every variable from the four chosen variable has an interesting statistical relationship with alcohol consumption. Let us see if it is true!  
+  
+```{r}
+g1 <- ggplot(alc, aes(x=high_use, y=famrel, col = sex))
+g1 + geom_boxplot() + ylab("Family relationships")+ xlab("High usage") + ggtitle("Family relationships vs high usage of alcohol")
+```
+  
+As we can see from this boxplot, high usage of alcohol seems to to weaken the students' family relationships (since 1 - very bad <-> 5 - excellent).  
+  
+```{r}
+values <- rep(x = 0, 4)
+values[1]<- sum((!alc$high_use) & (alc$famsup == "no"))
+values[2]<- sum((alc$high_use) & (alc$famsup == "no"))
+values[3]<- sum((!alc$high_use) & (alc$famsup == "yes"))
+values[4]<- sum((alc$high_use) & (alc$famsup == "yes"))
+values[c(1,3)] = values[c(1,3)]/sum(!alc$high_use)
+values[c(2,4)] = values[c(2,4)]/sum(alc$high_use)
+df <- expand.grid(c( "Low","High"), c("No support", "Support"))
+g2 <- ggplot(df, aes(x = Var1, y=Var2)) + geom_point(aes(size = values), colour = "green") + theme_bw() + xlab("") + ylab("")
+g2 + scale_size_continuous(range=c(10,30)) +geom_text(aes(label = round(values, digits = 2))) + ggtitle("Family educational supprot (Y/N)")
+```
+  
+Here we can see the persentages of students who get educational support from family sorted by the usage of alcohol. There is a slight difference between high and low usage, but the difference could be much more!
+  
+```{r}
+f1 <- ggplot(alc, aes(goout))
+f1 + geom_bar(aes(fill = high_use), position = "fill") + xlab("Going out") + ggtitle("Going out with friends")
+```
+  
+Interestingly in this barplot we can see that clearly students who use high amount of alcohol thend to go out with friends much more!
+  
+```{r}
+d1 <- ggplot(alc, aes(Pstatus))
+d1 + geom_bar(aes(fill = high_use), position = "fill") + xlab("A = Apart, T = Together") + ggtitle("Parents' status")
+```
+  
+When exploring the relationship between parents cohabitation status and high alcohol usage, we see that in families where parents are living together, the usage of alcohol is smaller than in families where parents are living together. However, the difference is somewhat small.  
+  
+Next 
+  
+  
+```{r}
+model <- glm(high_use ~ famrel + famsup + goout + Pstatus, data = alc, family = "binomial")
+
+summary(model)
+
+OR <- coef(model) %>% exp
+CI <- confint(model) %>% exp
+cbind(OR, CI)
+
+
+```
+  
+Here we have an awful amount of coefficients and values from the logistic regression model. A long story short: my orginal hyphotesis that with every explanatory variable we can confidently predict the usage of alcohol, can be rejected. This is because only family relationship and going out with friends seem to be factors that have a statistically significant relationship with the usage of alcohol.  
+  
+```{r}
+model2 <- glm(high_use ~ famrel + goout, data = alc, family = "binomial")
+probabilities <- predict(model2, type = "response")
+alc <- mutate(alc, probability = probabilities)
+alc <- mutate(alc, prediction = probabilities>0.5)
+table(high_use = alc$high_use, prediction = alc$prediction)
+
+d2 <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))
+d2 + geom_point(position = position_jitter(w=0.1,h=0.1))
+
+```
+    
+    
+
+From this 2x2 cross tabulation we can see that from all the $382$ observations $68+25=93$ were predicted wrongly, meaning that we have a training error of $\frac{93}{382} = 0.243$.  
+
+
+
+
