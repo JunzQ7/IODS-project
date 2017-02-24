@@ -1,0 +1,52 @@
+# Chapter 5 - Dimensionality reduction techniques
+
+```{r warning=FALSE}
+setwd("/home/juhana/Desktop/IODS-project/data")
+human <- read.csv("/home/juhana/Desktop/IODS-project/data/human.csv", sep = ",", header = T, row.names = 1)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(GGally)
+```
+
+Let us explore the structure and the dimensions of the loaded data:
+
+```{r}
+str(human)
+dim(human)
+```
+
+This dataset is about GNI:s and other variables in 155 different countries. There are 8 variables in all.  
+  
+Let us see a graphical overview of the data and a summary of the variables: 
+
+```{r}
+ggpairs(human)
+summary(human)
+```
+
+As you can see, there is a considerable correlation between many variables. What is also interesting is that the variable Edu.Exp seems to be almost normally distributed, whereas the Mat.Mor and GNI variables seem to be exponentially distributed.  
+  
+Next we will perform a principal component analysis!  
+
+```{r}
+pca_human <- prcomp(human)
+summary(pca_human)
+biplot(pca_human, choices = 1:2, cex = c(0.8,1),col = c("grey40", "deeppink2"))
+
+```
+  
+    
+And now we do the same with standardized variables!
+
+```{r}
+human_std <- scale(human)
+summary(human_std)
+pca_human <- prcomp(human_std)
+biplot(pca_human, choices = 1:2, cex = c(0.8,1),col = c("grey40", "deeppink2"))
+```
+
+
+
+
